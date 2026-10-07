@@ -1,0 +1,33 @@
+# Build output
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+*.lib
+*.out
+*.app
+*.dylib
+*.pdb
+*.ilk
+
+# IDE and Editor settings
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# CMake build folders (if applicable)
+build/
+cmake-build-*/
+
+# Make build folders
+Makefile
