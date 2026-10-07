@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-// The code below defines three functions to check the stack growth direction.
+// Code below defines three functions to check the stack growth direction.
 // Each function uses a different method to determine whether the stack grows upwards or downwards.
 // For educational purposes, you can compile it with different flags (e.g.,gcc -O0 StackExercise.c, gcc -O2 StackExercise.c)
 // or use another compiler (e.g.,clang) to see how compiler optimizations may affect the results.
@@ -84,7 +84,7 @@ int main()
 {
 	printf("Stack growth direction check by variable: %s\n", check_simple_variables() ? "UP":"DOWN");
 	printf("Stack growth direction check by recursion: %s\n", check_by_recursion(NULL) ? "UP":"DOWN");
-	printf("Stack growth direction check by frames: %s\n", check_by_recursion_fixed(NULL) ? "UP":"DOWN");
+	printf("Stack growth direction check by recursion with frames: %s\n", check_by_recursion_fixed(NULL) ? "UP":"DOWN");
 	printf("Stack growth direction check by noinline attribute: %s\n", check_by_forced_attribute() ? "UP":"DOWN");
 	return 0;
 }

@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include <stdint.h>
 
-// Code below demonstrates different ways of byte order manipulation within a uint32_t
+// Code below demonstrates different ways of bits manipulation within a uint32_t,
+// a classic C pattern known as "dispatch table" and a simple way of self-testing the results.
 // Input:  0x12345678
 // Expected: 0x78563412
 
 
 // Method 1: Bitwise shifts
 // Most portable. Does not depend on architecture or how the compiler stores variables in memory.
-// Teaches: operators <<, >>, |, & and masks.
-
+// Shows: bit operators <<, >>, |, & and masks.
 uint32_t swap_shifts(uint32_t value) {
     return ((value & 0x000000FF) << 24) |   // byte 0 -> position 3
            ((value & 0x0000FF00) <<  8) |   // byte 1 -> position 2
@@ -21,7 +21,7 @@ uint32_t swap_shifts(uint32_t value) {
 // We create a pointer to uint8_t and copy bytes one by one.
 // WARNING: This method DEPENDS on the endianness of the machine!
 // On a little-endian machine, it will work "in reverse" compared to a big-endian machine.
-// Teaches: memory aliasing and what endianness really means.
+// Shows: memory aliasing and what endianness really means.
 uint32_t swap_via_pointer(uint32_t value) {
     uint8_t *bytes = (uint8_t *)&value;
     uint8_t tmp;
@@ -36,7 +36,7 @@ uint32_t swap_via_pointer(uint32_t value) {
 // The same memory area is viewed as a uint32_t OR as an array of bytes.
 // This is a common pattern in hardware drivers (parsing frames).
 // WARNING: Similar to the previous method - depends on endianness.
-// Teaches: union, memory layout, working with network protocols.
+// Shows: union, memory layout, working with network protocols.
 typedef union {
     uint32_t word;
     uint8_t  bytes[4];
@@ -52,10 +52,9 @@ uint32_t swap_via_union(uint32_t value) {
     return u.word;
 }
 
-
 // Method 4: Loop + write "from the end"
 // Readable, easy to extend to any width (16/64 bits).
-// Teaches: generalizing algorithms and avoiding code duplication.
+// Shows: generalizing algorithms and avoiding code duplication.
 uint32_t swap_loop(uint32_t value) {
     const uint8_t *src = (const uint8_t *)&value;
     uint32_t result = 0;
@@ -71,7 +70,7 @@ uint32_t swap_loop(uint32_t value) {
 // Method 5: Built-in function (GCC/Clang)
 // The compiler generates a single processor instruction (BSWAP on x86).
 // Fastest - but not portable outside GCC/Clang.
-// Teaches: the existence of intrinsics and that "hand-crafted" code can be slower.
+// Shows: the existence of intrinsics and that "hand-crafted" code can be slower.
 uint32_t swap_builtin(uint32_t value) {
 #if defined(__GNUC__) || defined(__clang__)
     return __builtin_bswap32(value);
@@ -97,14 +96,18 @@ int main(void) {
     printf("Input                : 0x%08X\n", input);
     printf("Expected            : 0x%08X\n\n", expected);
 
+    // Within this struct array we store the name of the method and
+    // a pointer to the function that implements it
+    // (that is the first instrucion line of the function in memory).
     struct { const char *name; uint32_t (*fn)(uint32_t); } methods[] = {
         { "1. Bitwise shifts     ", swap_shifts },
         { "2. Pointer to bytes   ", swap_via_pointer },
         { "3. Union              ", swap_via_union },
-        { "4. Loop              ", swap_loop },
-        { "5. __builtin_bswap32  ", swap_builtin },
+        { "4. Loop               ", swap_loop },
+        { "5. Built in bswap32  ", swap_builtin },
     };
 
+    // Simple interation chceck with expected value.
     size_t n = sizeof(methods) / sizeof(methods[0]);
     for (size_t i = 0; i < n; i++) {
         uint32_t out = methods[i].fn(input);
